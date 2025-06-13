@@ -1,0 +1,78 @@
+﻿@page "/KitDeliveries/KitDeliveryNguyenTQList"
+@using DNATest.Repositories.NguyenTQ.Models
+
+<h3>Kit Delivery List</h3>
+
+@if (kitDeliveryNguyenTQs == null)
+{
+    <div>Loading data...</div>
+}
+else
+{  
+    <table class="table table-striped table-bordered align-middle">
+        <thead class="table-success text-center">
+            <tr>
+                <th>Kit Code</th>
+                <th>Delivery Date</th>
+                <th>Delivered</th>
+                <th>Courier Out</th>
+                <th>Tracking Out</th>
+                <th>Status Out</th>
+                <th>Return Date</th>
+                <th>Returned</th>
+                <th>Courier In</th>
+                <th>Tracking In</th>
+                <th>Status In</th>
+                <th>Return Reason</th>
+                <th>Damage Reported</th>
+                <th>Express Delivery</th>
+                <th class="text-end">Fee</th>
+                <th>Last Updated</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var kit in kitDeliveryNguyenTQs)
+            {
+                <tr>
+                    <td>@kit.KitCode</td>
+                    <td>@kit.DeliveryDate?.ToString("dd/MM/yyyy")</td>
+                    <td>@(kit.IsDelivered == true ? "Yes" : "No")</td>
+                    <td>@kit.CourierOut</td>
+                    <td>@kit.TrackingNumberOut</td>
+                    <td>@kit.DeliveryStatusOut</td>
+                    <td>@kit.ReturnDate?.ToString("dd/MM/yyyy")</td>
+                    <td>@(kit.IsReturned == true ? "Yes" : "No")</td>
+                    <td>@kit.CourierIn</td>
+                    <td>@kit.TrackingNumberIn</td>
+                    <td>@kit.DeliveryStatusIn</td>
+                    <td>@kit.ReturnReason</td>
+                    <td>@(kit.DamageReported == true ? "Yes" : "No")</td>
+                    <td>@(kit.IsExpressDelivery == true ? "Yes" : "No")</td>
+                    <td class="text-end fw-bold text-danger">@kit.Fee?.ToString("N0")</td>
+                    <td>@kit.LastUpdated?.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td class="text-center">
+                        <div class="btn-group">
+                            <a href="/KitDeliveries/KitDeliveryNguyenTQDetail/@kit.KitDeliveryNguyenTqid" class="btn btn-sm btn-primary">
+                                Detail
+                            </a>
+                            <a href="/KitDeliveries/KitDeliveryNguyenTQForm/@kit.KitDeliveryNguyenTqid" class="btn btn-sm btn-warning">
+                                Edit
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<KitDeliveryNguyenTq> kitDeliveryNguyenTQs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(2000); // giả lập loading
+        kitDeliveryNguyenTQs = await _serviceProviders.KitDeliveryNguyenTQService.GetAllAsync();
+    }
+}

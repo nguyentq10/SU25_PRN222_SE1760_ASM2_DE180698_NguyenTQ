@@ -1,0 +1,22 @@
+﻿@page "/KitDeliveries/KitDeliveryNguyenTQForm/{KitDeliveryid:int}"
+@using DNATest.Repositories.NguyenTQ.Models
+
+
+
+
+
+@code {
+    [Parameter] public int KitDeliveryid { get; set; }
+
+    private KitDeliveryNguyenTq kit = new KitDeliveryNguyenTq();
+
+    protected override async Task OnInitializedAsync()
+    {
+       
+        await Task.Delay(500);
+        if (KitDeliveryid > 0)
+        {
+            kit= await _serviceProviders.KitDeliveryNguyenTQService.GetIdAsync(KitDeliveryid);
+        }
+    }
+}

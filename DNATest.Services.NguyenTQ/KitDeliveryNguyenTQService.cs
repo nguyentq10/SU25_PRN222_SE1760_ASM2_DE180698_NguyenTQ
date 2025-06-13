@@ -10,42 +10,41 @@ namespace DNATest.Services.NguyenTQ
 {
     public class KitDeliveryNguyenTQService : IKitDeliveryNguyenTQService
     {
-        private readonly KitDeliveryNguyenTQRepositories _repository;
-
-        public KitDeliveryNguyenTQService() => _repository ??= new KitDeliveryNguyenTQRepositories();
-
+        
+        private readonly IUnitOfWork _unitOfWork;
+       public KitDeliveryNguyenTQService() => _unitOfWork = new UnitOfWork();
         public async Task<int> CreateAsync(KitDeliveryNguyenTq kitdelivery)
         {
-            return await _repository.CreateAsync(kitdelivery);
+            return await _unitOfWork.KitDeliveryNguyenTQRepositories.CreateAsync(kitdelivery);
         }
 
      
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var items = await _repository.GetByIdAsync(id);
-            return await _repository.RemoveAsync(items);
+            var items = await _unitOfWork.KitDeliveryNguyenTQRepositories.GetByIdAsync(id);
+            return await _unitOfWork.KitDeliveryNguyenTQRepositories.RemoveAsync(items);
         }
 
         public async Task<List<KitDeliveryNguyenTq>> GetAllAsync()
         {
-            return await _repository.GetAllAsync();
+            return await _unitOfWork.KitDeliveryNguyenTQRepositories.GetAllAsync();
         }
 
         public async Task<KitDeliveryNguyenTq> GetIdAsync(int id)
         {
-            return await _repository.GetByIdAsync(id);
+            return await _unitOfWork.KitDeliveryNguyenTQRepositories.GetByIdAsync(id);
         }
 
         public async Task<List<KitDeliveryNguyenTq>> SearchAsync(int kitdeliveryId, string courierOut, int rating)
         {
            
-            return await _repository.SearchAsync(kitdeliveryId, courierOut, rating);
+            return await _unitOfWork.KitDeliveryNguyenTQRepositories.SearchAsync(kitdeliveryId, courierOut, rating);
         }
 
         public async Task<int> UpdateAsync(KitDeliveryNguyenTq kitdelivery)
         {
-           return await _repository.UpdateAsync(kitdelivery);
+           return await _unitOfWork.KitDeliveryNguyenTQRepositories.UpdateAsync(kitdelivery);
         }
 
     

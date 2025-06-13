@@ -1,0 +1,90 @@
+﻿@page "/KitDeliveries/KitDeliveryNguyenTQDetail/{KitDeliveryNguyenTqid:int}"
+@using DNATest.Repositories.NguyenTQ.Models
+<h3 class="mb-4">Kit Delivery Detail</h3>
+
+@if (kit == null)
+{
+    <div>Loading...</div>
+}
+else
+{
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Kit Code:</dt>
+                <dd class="col-sm-9">@kit.KitCode</dd>
+
+                <dt class="col-sm-3">Delivery Date:</dt>
+                <dd class="col-sm-9">@kit.DeliveryDate?.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-3">Delivered:</dt>
+                <dd class="col-sm-9">@((kit.IsDelivered == true) ? "Yes" : "No")</dd>
+
+                <dt class="col-sm-3">Courier Out:</dt>
+                <dd class="col-sm-9">@kit.CourierOut</dd>
+
+                <dt class="col-sm-3">Tracking Out:</dt>
+                <dd class="col-sm-9">@kit.TrackingNumberOut</dd>
+
+                <dt class="col-sm-3">Status Out:</dt>
+                <dd class="col-sm-9">@kit.DeliveryStatusOut</dd>
+
+                <dt class="col-sm-3">Return Date:</dt>
+                <dd class="col-sm-9">@kit.ReturnDate?.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-3">Returned:</dt>
+                <dd class="col-sm-9">@((kit.IsReturned == true) ? "Yes" : "No")</dd>
+
+                <dt class="col-sm-3">Courier In:</dt>
+                <dd class="col-sm-9">@kit.CourierIn</dd>
+
+                <dt class="col-sm-3">Tracking In:</dt>
+                <dd class="col-sm-9">@kit.TrackingNumberIn</dd>
+
+                <dt class="col-sm-3">Status In:</dt>
+                <dd class="col-sm-9">@kit.DeliveryStatusIn</dd>
+
+                <dt class="col-sm-3">Return Reason:</dt>
+                <dd class="col-sm-9">@kit.ReturnReason</dd>
+
+                <dt class="col-sm-3">Damage Reported:</dt>
+                <dd class="col-sm-9">@((kit.DamageReported == true) ? "Yes" : "No")</dd>
+
+                <dt class="col-sm-3">Express Delivery:</dt>
+                <dd class="col-sm-9">@((kit.IsExpressDelivery == true) ? "Yes" : "No")</dd>
+
+                <dt class="col-sm-3">Fee:</dt>
+                <dd class="col-sm-9 text-danger fw-bold">@kit.Fee?.ToString("N0")</dd>
+
+                <dt class="col-sm-3">Last Updated:</dt>
+                <dd class="col-sm-9">@kit.LastUpdated?.ToString("dd/MM/yyyy HH:mm")</dd>
+            </dl>
+
+            <div class="mt-4 text-end">
+                <a class="btn btn-warning me-2" href="/KitDeliveries/KitDeliveryNguyenTQForm/@kit.KitDeliveryNguyenTqid">Edit</a>
+                <button class="btn btn-secondary" @onclick="BackToList">Back</button>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+@code {
+    [Parameter] public int KitDeliveryNguyenTqid { get; set; }
+
+    private KitDeliveryNguyenTq kit = new KitDeliveryNguyenTq();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await Task.Delay(500);
+            kit = await _serviceProviders.KitDeliveryNguyenTQService.GetIdAsync(KitDeliveryNguyenTqid);
+        
+    }
+
+    private void BackToList()
+    {
+        navigationManager.NavigateTo("/KitDeliveries/KitDeliveryNguyenTQList");
+    }
+}

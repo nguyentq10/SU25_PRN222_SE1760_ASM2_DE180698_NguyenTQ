@@ -15,7 +15,7 @@ namespace DNATest.Services.NguyenTQ
         IKitDeliveryNguyenTQService IKitDeliveryNguyenTQService { get; }
         IFeedbackNguyenTQService IFeedbackNguyenTQService { get; }
     }
-    public class ServiceProviders : IServiceProvider
+    public class ServiceProviders :IServiceProviders
     {
         private KitDeliveryNguyenTQService _kitDeliveryNguyenTQService;
         private UserAccountService _userAccountService;
@@ -70,10 +70,6 @@ namespace DNATest.Services.NguyenTQ
             {
                 return _feedbackNguyenTQService ??= new FeedbackNguyenTQService();
             }
-        }
-        public object? GetService(Type serviceType)
-        {
-            throw new NotImplementedException();
         }
     }
 }

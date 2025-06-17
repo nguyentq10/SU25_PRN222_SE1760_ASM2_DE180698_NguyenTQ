@@ -1,22 +1,153 @@
-﻿@page "/KitDeliveries/KitDeliveryNguyenTQForm/{KitDeliveryid:int}"
+﻿@page "/KitDeliveries/KitDeliveryNguyenTQForm"
+@page "/KitDeliveries/KitDeliveryNguyenTQForm/{KitDeliveryid:int}"
 @using DNATest.Repositories.NguyenTQ.Models
+<h3>Edit Product</h3>
+@if (kit == null)
+{
+    <div class="alert alert-info">Loading Kit...</div>
+}
+else
+{
 
+    <EditForm Model="@kit" OnValidSubmit="@SaveKitDeliveryNguyenTQ" FormName="KitDeliveryNguyenTQForm">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
+          <div class="card shadow-sm border-0 p-4">
+            <div class="mb-3">
+                <label class="form-label">Kit Code:</label>
+                <InputText class="form-control" @bind-Value="kit.KitCode" />
+            </div>
 
+            <div class="mb-3">
+                <label class="form-label">Delivery Date: </label>
+                <InputDate TValue="DateTime?" class="form-control" @bind-Value="kit.DeliveryDate" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Delivered:</label>
+                <InputSelect class="form-control" @bind-Value="kit.IsDelivered">
+                    <option value="">-- Select --</option>
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                </InputSelect>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Courier Out</label>
+                <InputText class="form-control" @bind-Value="kit.CourierOut" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tracking Out:</label>
+                <InputText class="form-control" @bind-Value="kit.TrackingNumberOut" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tracking Out:</label>
+                <InputText class="form-control" @bind-Value="kit.TrackingNumberOut" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Status Out:</label>
+                <InputText class="form-control" @bind-Value="kit.DeliveryStatusOut" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Return Date:</label>
+                <InputDate TValue="DateTime?" class="form-control" @bind-Value="kit.ReturnDate" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Returned:</label>
+                <InputSelect class="form-control" @bind-Value="kit.IsReturned">
+                    <option value="">-- Select --</option>
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                </InputSelect>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Courier In:</label>
+                <InputText class="form-control" @bind-Value="kit.CourierIn" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Tracking In:</label>
+                <InputText class="form-control" @bind-Value="kit.TrackingNumberIn" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Status In:</label>
+                <InputText class="form-control" @bind-Value="kit.DeliveryStatusIn" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Return Reason:</label>
+                <InputText class="form-control" @bind-Value="kit.ReturnReason" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Damage Reported:</label>
+                <InputSelect class="form-control" @bind-Value="kit.DamageReported">
+                    <option value="">-- Select --</option>
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                </InputSelect>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Express Delivery:</label>
+                <InputSelect class="form-control" @bind-Value="kit.IsExpressDelivery">
+                    <option value="">-- Select --</option>
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                </InputSelect>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Fee:</label>
+                <InputNumber TValue="decimal?" class="form-control" @bind-Value="kit.Fee" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Last Updated:</label>
+                <InputDate TValue="DateTime?" class="form-control" @bind-Value="kit.LastUpdated" />
+            </div>
+            <button class="btn btn-primary" type="submit">Save</button>
+        </div>
+    </EditForm>
+}
 
 
 @code {
     [Parameter] public int KitDeliveryid { get; set; }
 
     private KitDeliveryNguyenTq kit = new KitDeliveryNguyenTq();
+    private List<KitDeliveryNguyenTq> kitDeliveryNguyenTqlist = new List<KitDeliveryNguyenTq>();
 
     protected override async Task OnInitializedAsync()
     {
-       
+        kitDeliveryNguyenTqlist = await _serviceProviders.KitDeliveryNguyenTQService.GetAllAsync();
         await Task.Delay(500);
         if (KitDeliveryid > 0)
         {
             kit= await _serviceProviders.KitDeliveryNguyenTQService.GetIdAsync(KitDeliveryid);
         }
+        else 
+        {
+            kit = new KitDeliveryNguyenTq();
+        }
+    }
+
+    protected async Task SaveKitDeliveryNguyenTQ()
+    {
+        if (kit.KitDeliveryNguyenTqid == 0)
+        {
+            await _serviceProviders.KitDeliveryNguyenTQService.CreateAsync(kit);
+        }
+        else
+        {
+            var existing = await _serviceProviders.KitDeliveryNguyenTQService.GetIdAsync(kit.KitDeliveryNguyenTqid);
+            if (existing == null)
+            {
+                await _serviceProviders.KitDeliveryNguyenTQService.CreateAsync(kit);
+            }
+            else
+            {
+                await _serviceProviders.KitDeliveryNguyenTQService.UpdateAsync(kit);
+            }
+        }
+
+        navigationManager.NavigateTo("/KitDeliveries/KitDeliveryNguyenTQList", false);
     }
 }

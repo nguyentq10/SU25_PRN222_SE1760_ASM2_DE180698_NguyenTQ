@@ -23,7 +23,11 @@ else
                 <label class="form-label">Delivery Date: </label>
                 <InputDate TValue="DateTime?" class="form-control" @bind-Value="kit.DeliveryDate" />
             </div>
-
+            <div class="mb-3">
+                <label class="form-label">Booking ID:</label>
+                <InputNumber class="form-control" @bind-Value="kit.BookingMinhNdaid" />
+                <ValidationMessage For="@(() => kit.BookingMinhNdaid)" />
+            </div>
             <div class="mb-3">
                 <label class="form-label">Delivered:</label>
                 <InputSelect class="form-control" @bind-Value="kit.IsDelivered">
@@ -36,11 +40,6 @@ else
             <div class="mb-3">
                 <label class="form-label">Courier Out</label>
                 <InputText class="form-control" @bind-Value="kit.CourierOut" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Tracking Out:</label>
-                <InputText class="form-control" @bind-Value="kit.TrackingNumberOut" />
             </div>
 
             <div class="mb-3">

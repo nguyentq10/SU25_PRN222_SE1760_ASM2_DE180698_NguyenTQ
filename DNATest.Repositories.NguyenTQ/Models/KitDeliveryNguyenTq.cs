@@ -6,26 +6,34 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DNATest.Repositories.NguyenTQ.Models;
 
+using System.ComponentModel.DataAnnotations;
+
 public partial class KitDeliveryNguyenTq
 {
     public int KitDeliveryNguyenTqid { get; set; }
+
     [Required(ErrorMessage = "Kit ID is required.")]
     public int? BookingMinhNdaid { get; set; }
 
+    [Required(ErrorMessage = "Kit Code is required.")]
+    [StringLength(50, ErrorMessage = "Kit Code cannot exceed 50 characters.")]
     public string KitCode { get; set; }
 
+    [DataType(DataType.Date)]
     public DateTime? DeliveryDate { get; set; }
 
     public bool? IsDelivered { get; set; }
 
     public string CourierOut { get; set; }
 
+    [StringLength(100)]
     public string TrackingNumberOut { get; set; }
 
     public string DeliveryStatusOut { get; set; }
 
     public string DeliveryNoteOut { get; set; }
 
+    [DataType(DataType.Date)]
     public DateTime? ReturnDate { get; set; }
 
     public bool? IsReturned { get; set; }
@@ -42,6 +50,7 @@ public partial class KitDeliveryNguyenTq
 
     public bool? DamageReported { get; set; }
 
+    [Range(0, double.MaxValue, ErrorMessage = "Fee must be a positive number.")]
     public decimal? Fee { get; set; }
 
     public DateTime? LastUpdated { get; set; }

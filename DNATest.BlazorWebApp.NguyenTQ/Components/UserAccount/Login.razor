@@ -1,0 +1,59 @@
+﻿@page "/UseAccount/Login"
+@using DNATest.Repositories.NguyenTQ.Models
+@inject IJSRuntime _jsRuntime
+<EditForm Model="@user" OnValidSubmit="@HandleLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="card shadow p-4 mx-auto" style="max-width: 400px;">
+        <div class="mb-3">
+            <label class="form-label">👤 Username</label>
+            <InputText class="form-control" @bind-Value="user.UserName" />
+            <ValidationMessage For="@(() => user.UserName)" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">🔑 Password</label>
+            <InputText class="form-control" type="password" @bind-Value="user.Password" />
+            <ValidationMessage For="@(() => user.Password)" />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+    </div>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(loginMessage))
+{
+    <div class="mt-3 alert @loginAlertClass">@loginMessage</div>
+}
+@code {
+    private UserAccount user = new UserAccount();
+    private string loginMessage = string.Empty;
+    private string loginAlertClass;
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+           user = await _serviceProviders.UserAccountService.GetSystemUserAccountAsync(user.UserName, user.Password);
+            if (user != null)
+            {
+                loginMessage = "Login successful! Redirecting...";
+                loginAlertClass = "alert-success";
+                 navigationManager.NavigateTo("/KitDeliveries/KitDeliveryNguyenTQList", false);
+            }
+            else
+            {
+                loginMessage = "Invalid username or password.";
+                loginAlertClass = "alert-danger";
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            loginMessage = $"An error occurred: {ex.Message}";
+            loginAlertClass = "alert-danger";
+        }
+    }
+    
+}

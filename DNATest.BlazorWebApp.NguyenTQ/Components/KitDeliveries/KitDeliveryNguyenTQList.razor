@@ -1,93 +1,170 @@
 ﻿@page "/KitDeliveries/KitDeliveryNguyenTQList"
 @using DNATest.Repositories.NguyenTQ.Models
+@using DNATest.Repositories.NguyenTQ.ModelExtentions
 @inject IJSRuntime _jsRuntime
 
-<h3>Kit Delivery List</h3>
+<div class="container mt-4">
+    <h3 class="mb-4 text-primary fw-bold">📦 Kit Delivery Management</h3>
 
-@if (kitDeliveryNguyenTQs == null)
-{
-    <div>Loading data...</div>
-}
-else
-{  
-    <table class="table table-striped table-bordered align-middle">
-        <thead class="table-success text-center">
-            <tr>
-                <th>Kit Code</th>
-                <th>Delivery Date</th>
-                <th>Delivered</th>
-                <th>Courier Out</th>
-                <th>Tracking Out</th>
-                <th>Status Out</th>
-                <th>Return Date</th>
-                <th>Returned</th>
-                <th>Courier In</th>
-                <th>Tracking In</th>
-                <th>Status In</th>
-                <th>Return Reason</th>
-                <th>Damage Reported</th>
-                <th>Express Delivery</th>
-                <th class="text-end">Fee</th>
-                <th>Last Updated</th>
-                <th class="text-center">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var kit in kitDeliveryNguyenTQs)
-            {
-                <tr>
-                    <td>@kit.KitCode</td>
-                    <td>@kit.DeliveryDate?.ToString("dd/MM/yyyy")</td>
-                    <td>@(kit.IsDelivered == true ? "Yes" : "No")</td>
-                    <td>@kit.CourierOut</td>
-                    <td>@kit.TrackingNumberOut</td>
-                    <td>@kit.DeliveryStatusOut</td>
-                    <td>@kit.ReturnDate?.ToString("dd/MM/yyyy")</td>
-                    <td>@(kit.IsReturned == true ? "Yes" : "No")</td>
-                    <td>@kit.CourierIn</td>
-                    <td>@kit.TrackingNumberIn</td>
-                    <td>@kit.DeliveryStatusIn</td>
-                    <td>@kit.ReturnReason</td>
-                    <td>@(kit.DamageReported == true ? "Yes" : "No")</td>
-                    <td>@(kit.IsExpressDelivery == true ? "Yes" : "No")</td>
-                    <td class="text-end fw-bold text-danger">@kit.Fee?.ToString("N0")</td>
-                    <td>@kit.LastUpdated?.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td class="text-center">
-                        <div class="btn-group">
-                            <a href="/KitDeliveries/KitDeliveryNguyenTQDetail/@kit.KitDeliveryNguyenTqid" class="btn btn-sm btn-primary">Detail</a>
-                            <a href="/KitDeliveries/KitDeliveryNguyenTQForm/@kit.KitDeliveryNguyenTqid" class="btn btn-sm btn-warning">Edit</a>
-                            <button class="btn btn-sm btn-danger" @onclick="@(async () => await DeleteKitAsync(kit.KitDeliveryNguyenTqid))">Delete</button>
+    @if (paginationResult == null)
+    {
+        <div class="alert alert-info">⏳ Loading data...</div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-between mb-3">
+            <a href="/KitDeliveries/KitDeliveryNguyenTQForm/0" class="btn btn-success fw-semibold">
+                ➕ Create New Kit
+            </a>
+        </div>
 
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-light">
+                <strong>🔍 Search Filters</strong>
+            </div>
+            <div class="card-body row g-2">
+                <div class="col-md-3">
+                    <input class="form-control" placeholder="🔢 KitCode" @bind="searchKit.KitCode" />
+                </div>
+                <div class="col-md-3">
+                    <input class="form-control" placeholder="🚚 Courier Out" @bind="searchKit.CourierOut" />
+                </div>
+                <div class="col-md-3">
+                    <input class="form-control" placeholder="💲 Fee" @bind="searchKit.Fee" />
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100" @onclick="OnSearch">🔎 Search</button>
+                </div>
+            </div>
+        </div>
 
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Kit Code</th>
+                        <th>Delivery Date</th>
+                        <th>Delivered</th>
+                        <th>Courier Out</th>
+                        <th>Tracking Out</th>
+                        <th>Status Out</th>
+                        <th>Return Date</th>
+                        <th>Returned</th>
+                        <th>Courier In</th>
+                        <th>Tracking In</th>
+                        <th>Status In</th>
+                        <th>Return Reason</th>
+                        <th>Damage?</th>
+                        <th>Express?</th>
+                        <th class="text-end">Fee</th>
+                        <th>Last Updated</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var kit in paginationResult.Items)
+                    {
+                        <tr>
+                            <td>@kit.KitCode</td>
+                            <td>@kit.DeliveryDate?.ToString("dd/MM/yyyy")</td>
+                            <td>@(kit.IsDelivered == true ? "✅" : "❌")</td>
+                            <td>@kit.CourierOut</td>
+                            <td>@kit.TrackingNumberOut</td>
+                            <td>@kit.DeliveryStatusOut</td>
+                            <td>@kit.ReturnDate?.ToString("dd/MM/yyyy")</td>
+                            <td>@(kit.IsReturned == true ? "✅" : "❌")</td>
+                            <td>@kit.CourierIn</td>
+                            <td>@kit.TrackingNumberIn</td>
+                            <td>@kit.DeliveryStatusIn</td>
+                            <td>@kit.ReturnReason</td>
+                            <td>@(kit.DamageReported == true ? "❗" : "-")</td>
+                            <td>@(kit.IsExpressDelivery == true ? "⚡" : "-")</td>
+                            <td class="text-end text-danger fw-bold">@kit.Fee?.ToString("N0")</td>
+                            <td>@kit.LastUpdated?.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="/KitDeliveries/KitDeliveryNguyenTQDetail/@kit.KitDeliveryNguyenTqid" class="btn btn-sm btn-outline-primary">View</a>
+                                    <a href="/KitDeliveries/KitDeliveryNguyenTQForm/@kit.KitDeliveryNguyenTqid" class="btn btn-sm btn-outline-warning">Edit</a>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="@(async ()=> await DeleteKitAsync(kit.KitDeliveryNguyenTqid))">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-center align-items-center gap-3">
+            <button class="btn btn-outline-secondary" @onclick="PreviousPage" disabled="@(!CanGoPrevious)">⬅️ Previous</button>
+            <span>Page <strong>@currentPage</strong> of <strong>@paginationResult.TotalPages</strong></span>
+            <button class="btn btn-outline-secondary" @onclick="NextPage" disabled="@(!CanGoNext)">Next ➡️</button>
+        </div>
+    }
+</div>
 @code {
-    private List<KitDeliveryNguyenTq> kitDeliveryNguyenTQs;
+    private PaginationResult<List<KitDeliveryNguyenTq>> paginationResult;
+    private int currentPage = 1;
+    private int pageSize = 10;
+
+    private SearchKitModel searchKit = new();
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(2000); // giả lập loading
-        kitDeliveryNguyenTQs = await _serviceProviders.KitDeliveryNguyenTQService.GetAllAsync();
+        await LoadPagedData();
     }
-    private async Task<bool> DeleteKitAsync(int KitDeliveryId)
-    {
-        var confirm = await _jsRuntime.InvokeAsync<bool>("confirm", $"Do you want to delete this item ({KitDeliveryId})?");
 
+    private async Task LoadPagedData()
+    {
+        paginationResult = await _serviceProviders.KitDeliveryNguyenTQService.GetPagedAsync(currentPage, pageSize);
+    }
+
+    private async Task OnSearch()
+    {
+        currentPage = 1;
+        paginationResult = await _serviceProviders.KitDeliveryNguyenTQService.SearchPagedAsync(searchKit.KitCode, searchKit.CourierOut, searchKit.Fee, currentPage, pageSize);
+    }
+
+    private bool CanGoPrevious => currentPage > 1;
+    private bool CanGoNext => paginationResult != null && currentPage < paginationResult.TotalPages;
+
+    private async Task PreviousPage()
+    {
+        if (CanGoPrevious)
+        {
+            currentPage--;
+            await LoadPagedData();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (CanGoNext)
+        {
+            currentPage++;
+            await LoadPagedData();
+        }
+    }
+
+    private async Task<bool> DeleteKitAsync(int id)
+    {
+        var confirm = await _jsRuntime.InvokeAsync<bool>("confirm", $"Do you want to delete this item ({id})?");
         if (confirm)
         {
-            var result = await _serviceProviders.KitDeliveryNguyenTQService.DeleteAsync(KitDeliveryId);
-
-            if (result)
-            {
-                navigationManager.NavigateTo("/KitDeliveries/KitDeliveryNguyenTQList");
-            }
+            var result = await _serviceProviders.KitDeliveryNguyenTQService.DeleteAsync(id);
+            if (result) await LoadPagedData();
         }
-
         return false;
+    }
+
+    private void Create()
+    {
+        navigationManager.NavigateTo("/KitDeliveries/KitDeliveryNguyenTQForm/0");
+    }
+
+    private class SearchKitModel
+    {
+        public string KitCode { get; set; }
+        public string CourierOut { get; set; }
+        public decimal? Fee { get; set; }
     }
 }

@@ -1,5 +1,8 @@
-﻿using DNATest.Repositories.NguyenTQ;
+﻿using Azure;
+using DNATest.Repositories.NguyenTQ;
+using DNATest.Repositories.NguyenTQ.ModelExtentions;
 using DNATest.Repositories.NguyenTQ.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,17 +39,38 @@ namespace DNATest.Services.NguyenTQ
             return await _unitOfWork.KitDeliveryNguyenTQRepositories.GetByIdAsync(id);
         }
 
-        public async Task<List<KitDeliveryNguyenTq>> SearchAsync(int kitdeliveryId, string courierOut, int rating)
+        public async Task<PaginationResult<List<KitDeliveryNguyenTq>>> GetPagedAsync(int page, int pageSize)
+        {
+            var allItems = await _unitOfWork.KitDeliveryNguyenTQRepositories.GetAllAsync(); // luôn dùng await
+            var pageItems = allItems.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            return new PaginationResult<List<KitDeliveryNguyenTq>>
+            {
+                TotalItems = allItems.Count,
+                TotalPages = (int)Math.Ceiling((double)allItems.Count / pageSize),
+                CurrentPage = page,
+                PageSize = pageSize,
+                Items = pageItems
+            };
+        }
+
+        public async Task<List<KitDeliveryNguyenTq>> SearchAsync(string kitcode, string courierOut, decimal? rating)
         {
            
-            return await _unitOfWork.KitDeliveryNguyenTQRepositories.SearchAsync(kitdeliveryId, courierOut, rating);
+            return await _unitOfWork.KitDeliveryNguyenTQRepositories.SearchAsync(kitcode, courierOut, rating);
         }
+
 
         public async Task<int> UpdateAsync(KitDeliveryNguyenTq kitdelivery)
         {
            return await _unitOfWork.KitDeliveryNguyenTQRepositories.UpdateAsync(kitdelivery);
         }
 
-    
+        public async Task<PaginationResult<List<KitDeliveryNguyenTq>>> SearchPagedAsync(string kitCode, string courierOut, decimal? fee, int page, int pageSize)
+        {
+           return await _unitOfWork.KitDeliveryNguyenTQRepositories.SearchPagedAsync(kitCode, courierOut, fee, page, pageSize);
+        }
+
+
     }
 }
